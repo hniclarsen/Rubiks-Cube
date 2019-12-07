@@ -4,21 +4,81 @@
         <meta charset="utf-8"/>
         <title>WebGL Rubik's Cube</title>
         <script id="fshader" type="x-shader/x-fragment">
-            void main(void) {
+            precision mediump float;
 
+            varying vec4 vColor;
+            varying vec3 vLightPos;
+            varying vec3 vLightI;
+            varying vec3 vDirCamera;
+            varying vec3 vHalfVec;
+            varying vec3 vNormal;
+            varying vec3 vSpecColor;
+            varying vec2 vTexCoord;
+
+            void main(void) {
+                vec4 color;
+                float specAmount = 0.05;
+                float specShine = 5.0;
+                float specBright = specAmount*pow(max(0.0, dot(vNormal, vHalfVec)),specShine);
+                float lightDot = dot(normalize(vNormal), vLightPos);
+                float surfBright = max(0.0, lightDot);
+
+                if(vTexCoord.t > 0.15 && vTexCoord.t < 0.85
+                && vTexCoord.s > 0.15 && vTexCoord.s < 0.85) {
+                    color = vColor;
+                    if(vTexCoord.s < 0.2 || vTexCoord.t < 0.2
+                    || vTexCoord.s > 0.8 || vTexCoord.t > 0.8) {
+                        color -= vec4(0.25, 0.25, 0.25, 0.25);
+                        surfBright = min(0.75, lightDot);
+                    }
+                } else {
+                    color = vec4(0.1, 0.1, 0.1, 1.0);
+                }
+                color += vec4(vLightI, color.a);
+                color += vec4(color.rgb*surfBright+vSpecColor.rgb*specBright, color.a);
+
+                gl_FragColor = color;
             }
         </script>
         <script id="vshader" type="x-shader/x-vertex">
+            attribute vec4 aVertexColor;
+            attribute vec3 aVertexPosition;
+            attribute vec3 aNormal;
+            attribute vec2 aTexCoord;
+            
+            uniform mat4 uMVMatrix;
+            uniform mat4 uPMatrix;
+
+            varying vec4 vColor;
+            varying vec3 vLightPos;
+            varying vec3 vLightI;
+            varying vec3 vDirCamera;
+            varying vec3 vHalfVec;
+            varying vec3 vNormal;
+            varying vec3 vSpecColor;
+            varying vec2 vTexCoord;
+
             void main(void) {
-                
+                gl_Position = uPMatrix*uMVMatrix*vec4(aVertexPosition,1.0);
+
+                vNormal = (uMVMatrix*vec4(aNormal,0.0)).xyz;
+                vColor = aVertexColor;
+                vLightPos = vec3(0.0, 1.0, 0.25);
+                vLightI = vec3(0.1, 0.1, 0.1)*dot(vNormal, vLightPos);
+                vDirCamera = normalize(vec3(0.0, 0.0, 1.0)-(uPMatrix*vec4(aVertexPosition, 1.0)).xyz);
+                vHalfVec = normalize(vDirCamera+vLightPos);
+                vSpecColor = vec3(0.5, 0.5, 0.5);
+                vTexCoord = aTexCoord;
             }
         </script>
-        <script type="text/javascript" src="scripts/glMatrix_util.js"></script>
-        <script type="text/javascript" src="scripts/webgl-utils.js"></script>
+        <script type="text/javascript" src="libs/glMatrix_util.js"></script>
+        <script type="text/javascript" src="libs/webgl-utils.js"></script>
+        <script type="text/javascript" src="scripts/cube.js"></script>
         <script type="text/javascript" src="scripts/main.js"></script>
+        <script type="text/javascript" src="scripts/interaction.js"></script>
     </head>
     <body>
-        <canvas id="canvas" width=640 height=480 oncontextmenu="return false;">
+        <canvas id="canvas" style="display:block;margin:auto;" width=640 height=480 oncontextmenu="return false;">
             If you are seeing this, your web browser does not support the canvas element.
             Please use a browser from this decade.
         </canvas>
