@@ -87,7 +87,7 @@ var vertexPositionBuffer;
 var vertexTextureCoordBuffer;
 var vertexIndicesBuffer;
 function initGeometry() {
-    for(let i = 0; i < 26; ++i) {
+    for(let i = 0; i < state.rCube.dimensions[0]*state.rCube.dimensions[1]*state.rCube.dimensions[2]; ++i) {
         cubeGeometry = new Cube(state.gl);
         state.gl.bindBuffer(state.gl.ARRAY_BUFFER, cubeGeometry.positionBuffer);
         state.gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cubeGeometry.positionBuffer.itemSize, state.gl.FLOAT, false, 0, 0);
@@ -117,13 +117,37 @@ function draw() {
     state.gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
     state.gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 
-    state.gl.drawElements(state.gl.TRIANGLES, 
-            state.rCube.cubes[0].vertexIndices.numItems, 
-            state.gl.UNSIGNED_SHORT, 
-            0
-    );
+    mat4.scale(mvMatrix, [0.3,0.3,0.3]);
+
+    let x = 0, y = 0, z = 0;
+    for(let cube = 0; cube < state.rCube.cubes.length; ++cube) {
+        drawCube(cube, x, y, z);
+        
+        if(x < state.rCube.dimensions[0]) ++x;
+        if(x >= state.rCube.dimensions[0]) { 
+            x = 0; 
+            y = y>=state.rCube.dimensions[1]?0:++y; 
+        }
+        if(y >= state.rCube.dimensions[1]) { 
+            y = 0; 
+            z = z>=state.rCube.dimensions[2]?0:++z; 
+        } 
+    }
 
     requestAnimationFrame(draw);
+}
+
+function drawCube(cube, x, y, z) {
+    let tempMatrix = mat4.create();
+    mat4.identity(tempMatrix);
+    mat4.multiply(mvMatrix, tempMatrix, tempMatrix);
+    mat4.translate(tempMatrix, [x*2.0,y*2.0,z*-2.0]);
+    state.gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, tempMatrix);
+    state.gl.drawElements(state.gl.TRIANGLES, 
+        state.rCube.cubes[cube].vertexIndices.numItems, 
+        state.gl.UNSIGNED_SHORT, 
+        0
+    );
 }
 
 var mvMatrix;
@@ -133,6 +157,7 @@ var state = {
     gl: null,
     rCube: {
         cubes: [],
+        dimensions: [3,3,3],
         state: null
     }
 }
