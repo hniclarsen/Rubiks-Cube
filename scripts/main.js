@@ -122,7 +122,7 @@ function draw() {
     let x = 0, y = 0, z = 0;
     for(let cube = 0; cube < state.rCube.cubes.length; ++cube) {
         drawCube(cube, x, y, z);
-        
+
         if(x < state.rCube.dimensions[0]) ++x;
         if(x >= state.rCube.dimensions[0]) { 
             x = 0; 
@@ -138,10 +138,14 @@ function draw() {
 }
 
 function drawCube(cube, x, y, z) {
+    let adjOrgin = 1.5;
+    let spacing  = 2.05;
     let tempMatrix = mat4.create();
     mat4.identity(tempMatrix);
     mat4.multiply(mvMatrix, tempMatrix, tempMatrix);
-    mat4.translate(tempMatrix, [x*2.0,y*2.0,z*-2.0]);
+    mat4.translate(tempMatrix, 
+        [x*spacing-adjOrgin, y*spacing-adjOrgin, z*-spacing]
+    );
     state.gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, tempMatrix);
     state.gl.drawElements(state.gl.TRIANGLES, 
         state.rCube.cubes[cube].vertexIndices.numItems, 
