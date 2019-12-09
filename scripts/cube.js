@@ -1,4 +1,4 @@
-function createCube(gl) {
+function Cube(gl) {
     let matrix = mat4.create();
 
     let cubePositionBuffer = gl.createBuffer();

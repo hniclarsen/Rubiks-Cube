@@ -49,11 +49,11 @@ function getPixel(e, canvas, gl) {
 }
 
 function pickObj(pixels) {
-    pixels = pixels.map(function(n) { return n/255});
-    return state.rCube.cubes.find(function(obj) {
-        return pixels.length == obj.aColor.length &&
-            pixels.every(function(s, t) {
-                return s == obj.aColor[i];
-            });
-    });
+    // pixels = pixels.map(function(n) { return n/255});
+    // return state.rCube.cubes.find(function(obj) {
+    //     return pixels.length == obj.aColor.length &&
+    //         pixels.every(function(s, t) {
+    //             return s == obj.aColor[i];
+    //         });
+    // });
 }

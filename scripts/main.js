@@ -88,7 +88,7 @@ var vertexTextureCoordBuffer;
 var vertexIndicesBuffer;
 function initGeometry() {
     for(let i = 0; i < 26; ++i) {
-        cubeGeometry = createCube(state.gl);
+        cubeGeometry = new Cube(state.gl);
         state.gl.bindBuffer(state.gl.ARRAY_BUFFER, cubeGeometry.positionBuffer);
         state.gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cubeGeometry.positionBuffer.itemSize, state.gl.FLOAT, false, 0, 0);
         state.gl.bindBuffer(state.gl.ARRAY_BUFFER, cubeGeometry.colorBuffer);
@@ -117,7 +117,11 @@ function draw() {
     state.gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
     state.gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 
-    state.gl.drawElements(state.gl.TRIANGLES, cubeGeometry.vertexIndices.numItems, state.gl.UNSIGNED_SHORT, 0);
+    state.gl.drawElements(state.gl.TRIANGLES, 
+            state.rCube.cubes[0].vertexIndices.numItems, 
+            state.gl.UNSIGNED_SHORT, 
+            0
+    );
 
     requestAnimationFrame(draw);
 }
