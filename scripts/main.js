@@ -101,7 +101,7 @@ function initGeometry() {
     }
 }
 
-var xRot = 0, yRot = 0, zRot = 0;
+var xRot = 35, yRot = 45, zRot = 0;
 function draw() {
     state.gl.viewport(0, 0, state.gl.viewportWidth, state.gl.viewportHeight);
     state.gl.clear(state.gl.COLOR_BUFFER_BIT | state.gl.DEPTH_BUFFER_BIT);
@@ -120,7 +120,8 @@ function draw() {
     mat4.scale(mvMatrix, [0.3,0.3,0.3]);
 
     let x = 0, y = 0, z = 0;
-    for(let cube = 0; cube < state.rCube.cubes.length; ++cube) {
+    for(let cube in state.rCube.cubes) {
+        if(!rotationMatrixInit) addRotationalMatrix(cube, x, y, z);
         drawCube(cube, x, y, z);
 
         if(x < state.rCube.dimensions[0]) ++x;
@@ -138,20 +139,39 @@ function draw() {
 }
 
 function drawCube(cube, x, y, z) {
-    let adjOrgin = 1.5;
-    let spacing  = 2.05;
+    let adjOrgin = 1.75;
+    let spacing  = 2.0;
+    
     let tempMatrix = mat4.create();
     mat4.identity(tempMatrix);
     mat4.multiply(mvMatrix, tempMatrix, tempMatrix);
+
+    if(!tempMatrix) return;
+
     mat4.translate(tempMatrix, 
-        [x*spacing-adjOrgin, y*spacing-adjOrgin, z*-spacing]
+        [x*spacing-adjOrgin, y*spacing-adjOrgin, z*-spacing+adjOrgin]
     );
+    
     state.gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, tempMatrix);
     state.gl.drawElements(state.gl.TRIANGLES, 
         state.rCube.cubes[cube].vertexIndices.numItems, 
         state.gl.UNSIGNED_SHORT, 
         0
     );
+}
+
+var rotationMatrixInit = false;
+function addRotationalMatrix(cube, x, y, z) {
+    let matrices = state.rCube.matrices;
+    if(cube >= state.rCube.cubes.length-1) {
+        rotationMatrixInit = true;
+    }
+    if     (y==0) matrices.bottom.arr[matrices.bottom.arr.length] = cube;
+    else if(y==1) matrices.middle.arr[matrices.middle.arr.length] = cube;
+    else if(y==2) matrices.top.arr[matrices.top.arr.length]       = cube;
+    if     (x==0) matrices.left.arr[matrices.left.arr.length]     = cube;
+    else if(x==1) matrices.center.arr[matrices.center.arr.length] = cube;
+    else if(x==2) matrices.right.arr[matrices.right.arr.length]   = cube;
 }
 
 var mvMatrix;
@@ -162,6 +182,14 @@ var state = {
     rCube: {
         cubes: [],
         dimensions: [3,3,3],
+        matrices: {
+            bottom: { arr: [], matrix: null, isRotate: false },
+            middle: { arr: [], matrix: null, isRotate: false },
+            top:    { arr: [], matrix: null, isRotate: false },
+            left:   { arr: [], matrix: null, isRotate: false },
+            center: { arr: [], matrix: null, isRotate: false },
+            right:  { arr: [], matrix: null, isRotate: false }
+        },
         state: null
     }
 }

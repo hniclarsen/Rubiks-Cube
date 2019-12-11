@@ -27,16 +27,20 @@
                     color = vColor;
                     if(vTexCoord.s < 0.2 || vTexCoord.t < 0.2
                     || vTexCoord.s > 0.8 || vTexCoord.t > 0.8) {
+                        //outer sticker
                         color -= vec4(0.25, 0.25, 0.25, 0.25);
                     } else {
+                        //inner sticker
                         specShine = 2.0;
                     }
                 } else {
                     if(vTexCoord.s < 0.05 || vTexCoord.t < 0.05
                     || vTexCoord.s > 0.95 || vTexCoord.t > 0.95) {
+                        //border
                         color = vec4(0.0, 0.0, 0.0, 1.0);
-                        specShine = 4.0;
+                        specShine = 4.5;
                     } else {
+                        //cube material
                         color = vec4(0.1, 0.1, 0.1, 1.0);
                     }
                 }
@@ -72,10 +76,10 @@
                 vNormal = (uMVMatrix*vec4(aNormal,0.0)).xyz;
                 vColor = aVertexColor;
                 vLightPos = vec3(0.0, 1.0, 0.25);
-                vLightI = vec3(0.1, 0.1, 0.1)*dot(vNormal, vLightPos);
+                vLightI = vec3(0.25, 0.15, 0.1)*dot(vNormal, vLightPos);
                 vDirCamera = normalize(vec3(0.0, 0.0, 1.0)-(uPMatrix*vec4(aVertexPosition, 1.0)).xyz);
                 vHalfVec = normalize(vDirCamera+vLightPos);
-                vSpecColor = vec3(0.5, 0.5, 0.5);
+                vSpecColor = vec3(0.5, 0.4, 0.4);
                 vTexCoord = aTexCoord;
             }
         </script>
