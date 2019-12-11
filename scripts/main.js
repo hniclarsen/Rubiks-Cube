@@ -151,6 +151,21 @@ function drawCube(cube, x, y, z) {
     mat4.translate(tempMatrix, 
         [x*spacing-adjOrgin, y*spacing-adjOrgin, z*-spacing+adjOrgin]
     );
+    mat4.rotate(
+        tempMatrix, 
+        state.rCube.rotations[cube].x/180.0*3.1415, 
+        [1, 0, 0]
+    );
+    mat4.rotate(
+        tempMatrix, 
+        state.rCube.rotations[cube].y/180.0*3.1415,
+        [0, 1, 0]
+    );
+    mat4.rotate(
+        tempMatrix, 
+        state.rCube.rotations[cube].z/180.0*3.1415,
+        [0, 0, 1]
+    );
     
     state.gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, tempMatrix);
     state.gl.drawElements(state.gl.TRIANGLES, 
@@ -166,12 +181,94 @@ function addRotationalMatrix(cube, x, y, z) {
     if(cube >= state.rCube.cubes.length-1) {
         rotationMatrixInit = true;
     }
-    if     (y==0) matrices.bottom.arr[matrices.bottom.arr.length] = cube;
-    else if(y==1) matrices.middle.arr[matrices.middle.arr.length] = cube;
-    else if(y==2) matrices.top.arr[matrices.top.arr.length]       = cube;
-    if     (x==0) matrices.left.arr[matrices.left.arr.length]     = cube;
-    else if(x==1) matrices.center.arr[matrices.center.arr.length] = cube;
-    else if(x==2) matrices.right.arr[matrices.right.arr.length]   = cube;
+    if     (y==0) matrices.bottom.arr[matrices.bottom.arr.length]   = cube;
+    else if(y==1) matrices.middle.arr[matrices.middle.arr.length]   = cube;
+    else if(y==2) matrices.top.arr[matrices.top.arr.length]         = cube;
+    if     (x==0) matrices.rleft.arr[matrices.rleft.arr.length]     = cube;
+    else if(x==1) matrices.rcenter.arr[matrices.rcenter.arr.length] = cube;
+    else if(x==2) matrices.rright.arr[matrices.rright.arr.length]   = cube;
+    if     (z==0) matrices.lleft.arr[matrices.lleft.arr.length]     = cube;
+    else if(z==1) matrices.lcenter.arr[matrices.lcenter.arr.length] = cube;
+    else if(z==2) matrices.lright.arr[matrices.lright.arr.length]   = cube;
+}
+
+function rotateMatrix(matrix, steps, direction) {
+    let LEFT = 'left', RIGHT = 'right';
+    let rotation = steps*90;
+    let rotationX = 0, rotationY = 0, rotationZ = 0;
+    let newRotation = [];
+    let newArray = [];
+    let newCubes = [];
+    let newCube;
+
+    switch(matrix) {
+        case state.rCube.matrices.bottom:
+            rotationY = rotation;
+            break;
+        case state.rCube.matrices.middle:
+            rotationY = rotation;
+            break;
+        case state.rCube.matrices.top:
+            rotationY = rotation;
+            break;
+        case state.rCube.matrices.rleft:
+            rotationX = rotation;
+            break;
+        case state.rCube.matrices.rcenter:
+            rotationX = rotation;
+            break;
+        case state.rCube.matrices.rright:
+            rotationX = rotation;
+            break;
+        case state.rCube.matrices.lleft:
+            rotationZ = -rotation;
+            break;
+        case state.rCube.matrices.lcenter:
+            rotationZ = -rotation;
+            break;
+        case state.rCube.matrices.lright:
+            rotationZ = -rotation;
+            break;
+    }
+
+    for(let cube in matrix.arr) {    
+        if(direction==LEFT) {
+            newCube = matrix.arr[(cube+steps)%matrix.arr.length];
+        } else if(direction==RIGHT) {
+            newCube = matrix.arr[(cube+matrix.arr.length-steps)%matrix.arr.length];
+        } else return;
+        newArray[cube] = newCube;
+
+        for(let position in state.rCube.cubes) {
+            if(position==newArray[cube]) {
+                newCubes[position] = state.rCube.cubes[newCube];
+                if(direction==LEFT) {
+                    newRotation[position] = {
+                        x: state.rCube.rotations[position].x - rotationX,
+                        y: state.rCube.rotations[position].y - rotationY,
+                        z: state.rCube.rotations[position].z - rotationZ
+                    };
+                }
+                else if(direction==RIGHT) {
+                    newRotation[position] = {
+                        x: state.rCube.rotations[position].x + rotationX,
+                        y: state.rCube.rotations[position].y + rotationY,
+                        z: state.rCube.rotations[position].z + rotationZ
+                    };
+                }
+            } else {
+                newCubes[position] = state.rCube.cubes[position];
+                if(!newRotation[position]) {
+                    newRotation[position] = state.rCube.rotations[position];
+                }
+            }
+        }
+    }
+    matrix.arr = newArray;
+    state.rCube.cubes = newCubes;
+    state.rCube.rotations = newRotation;
+
+    return matrix.arr;
 }
 
 var mvMatrix;
@@ -181,14 +278,18 @@ var state = {
     gl: null,
     rCube: {
         cubes: [],
+        rotations: [{x:0, y:0, z:0}],
         dimensions: [3,3,3],
         matrices: {
-            bottom: { arr: [], matrix: null, isRotate: false },
-            middle: { arr: [], matrix: null, isRotate: false },
-            top:    { arr: [], matrix: null, isRotate: false },
-            left:   { arr: [], matrix: null, isRotate: false },
-            center: { arr: [], matrix: null, isRotate: false },
-            right:  { arr: [], matrix: null, isRotate: false }
+            bottom:  { arr: [], matrix: null, isRotate: false },
+            middle:  { arr: [], matrix: null, isRotate: false },
+            top:     { arr: [], matrix: null, isRotate: false },
+            rleft:   { arr: [], matrix: null, isRotate: false },
+            rcenter: { arr: [], matrix: null, isRotate: false },
+            rright:  { arr: [], matrix: null, isRotate: false },
+            lleft:   { arr: [], matrix: null, isRotate: false },
+            lcenter: { arr: [], matrix: null, isRotate: false },
+            lright:  { arr: [], matrix: null, isRotate: false }
         },
         state: null
     }
@@ -196,11 +297,15 @@ var state = {
 window.onload = function() {
     mvMatrix = mat4.create();
     pMatrix = mat4.create();
-    state.gl = initCanvas();
+    state.gl = initCanvas();    
 
     initShaders();
     initTextures();
     initGeometry();
+
+    for(let i = 0; i < this.state.rCube.cubes.length; ++i) {
+        state.rCube.rotations[i] = {x: 0, y: 0, z:0};
+    }
 
     state.gl.clearColor(0.5, 0.5, 0.5, 1.0);
     state.gl.enable(state.gl.DEPTH_TEST);
