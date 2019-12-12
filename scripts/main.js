@@ -233,7 +233,7 @@ function rotateMatrix(matrix, steps, direction) {
         newArray[cube] = newCube;
 
         for(let position in state.rCube.cubes) {
-            if(state.rCube.cubes[position]==newArray[cube]) {
+            if(position==newArray[cube]) {
                 newCubes[position] = state.rCube.cubes[newCube];
                 
                 if(direction==LEFT) {
