@@ -3,7 +3,7 @@ window.addEventListener('mouseup', mouseUp);
 window.addEventListener('mousemove', mouseMove);
 
 var prevX, prevY, origX, origY;
-var drag = false, rotate = false;
+var drag = false;
 function mouseDown(e) {
     let obj = pickObj();
 

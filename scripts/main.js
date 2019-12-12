@@ -97,6 +97,8 @@ function initGeometry() {
         state.gl.vertexAttribPointer(shaderProgram.texCoordAttribute, cubeGeometry.textureBuffer.itemSize, state.gl.FLOAT, false, 0, 0);
         state.gl.bindBuffer(state.gl.ARRAY_BUFFER, cubeGeometry.normalBuffer);
         state.gl.vertexAttribPointer(shaderProgram.normalAttribute, cubeGeometry.normalBuffer.itemSize, state.gl.FLOAT, false, 0, 0);
+        cubeGeometry.num = i;
+        
         state.rCube.cubes[i] = cubeGeometry;
     }
 }
@@ -122,7 +124,12 @@ function draw() {
     let x = 0, y = 0, z = 0;
     for(let cube in state.rCube.cubes) {
         if(!rotationMatrixInit) addRotationalMatrix(cube, x, y, z);
-        drawCube(cube, x, y, z);
+        if(rotate) {
+            if(0/*state.rCube.matrices.bottom.arr[cube]*/) {
+                drawRotation(state.rCube.cubes[cube].num, x, y, z);
+            } else drawCube(state.rCube.cubes[cube].num, x, y, z);
+        }
+        else drawCube(state.rCube.cubes[cube].num, x, y, z);
 
         if(x < state.rCube.dimensions[0]) ++x;
         if(x >= state.rCube.dimensions[0]) { 
@@ -192,6 +199,11 @@ function addRotationalMatrix(cube, x, y, z) {
     else if(z==2) matrices.lright.arr[matrices.lright.arr.length]   = cube;
 }
 
+function drawRotation(cube, x, y, z) {
+
+}
+
+var rotate = false;
 function rotateMatrix(matrix, steps, direction) {
     let LEFT = 'left', RIGHT = 'right';
     let rotation = steps*90;
@@ -201,34 +213,15 @@ function rotateMatrix(matrix, steps, direction) {
     let newCubes = [];
     let newCube;
 
-    switch(matrix) {
-        case state.rCube.matrices.bottom:
-            rotationY = rotation;
-            break;
-        case state.rCube.matrices.middle:
-            rotationY = rotation;
-            break;
-        case state.rCube.matrices.top:
-            rotationY = rotation;
-            break;
-        case state.rCube.matrices.rleft:
-            rotationX = rotation;
-            break;
-        case state.rCube.matrices.rcenter:
-            rotationX = rotation;
-            break;
-        case state.rCube.matrices.rright:
-            rotationX = rotation;
-            break;
-        case state.rCube.matrices.lleft:
-            rotationZ = -rotation;
-            break;
-        case state.rCube.matrices.lcenter:
-            rotationZ = -rotation;
-            break;
-        case state.rCube.matrices.lright:
-            rotationZ = -rotation;
-            break;
+    if(matrix==state.rCube.matrices.bottom||
+      state.rCube.matrices.middle||state.matrices.bottom) {
+        rotationY = rotation;
+    } else if(matrix==state.rCube.matrices.rleft||
+      state.rCube.matrices.rcenter||state.matrices.rright) {
+        rotationX = rotation;
+    } else if(matrix==state.rCube.matrices.lleft||
+      state.rCube.matrices.lcenter||state.matrices.lright) {
+        rotationZ = -rotation;
     }
 
     for(let cube in matrix.arr) {    
@@ -240,8 +233,9 @@ function rotateMatrix(matrix, steps, direction) {
         newArray[cube] = newCube;
 
         for(let position in state.rCube.cubes) {
-            if(position==newArray[cube]) {
+            if(state.rCube.cubes[position]==newArray[cube]) {
                 newCubes[position] = state.rCube.cubes[newCube];
+                
                 if(direction==LEFT) {
                     newRotation[position] = {
                         x: state.rCube.rotations[position].x - rotationX,
@@ -264,6 +258,7 @@ function rotateMatrix(matrix, steps, direction) {
             }
         }
     }
+
     matrix.arr = newArray;
     state.rCube.cubes = newCubes;
     state.rCube.rotations = newRotation;
@@ -290,8 +285,7 @@ var state = {
             lleft:   { arr: [], matrix: null, isRotate: false },
             lcenter: { arr: [], matrix: null, isRotate: false },
             lright:  { arr: [], matrix: null, isRotate: false }
-        },
-        state: null
+        }
     }
 }
 window.onload = function() {
