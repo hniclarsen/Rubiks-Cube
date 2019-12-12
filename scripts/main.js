@@ -213,15 +213,34 @@ function rotateMatrix(matrix, steps, direction) {
     let newCubes = [];
     let newCube;
 
-    if(matrix==state.rCube.matrices.bottom||
-      state.rCube.matrices.middle||state.matrices.bottom) {
-        rotationY = rotation;
-    } else if(matrix==state.rCube.matrices.rleft||
-      state.rCube.matrices.rcenter||state.matrices.rright) {
-        rotationX = rotation;
-    } else if(matrix==state.rCube.matrices.lleft||
-      state.rCube.matrices.lcenter||state.matrices.lright) {
-        rotationZ = -rotation;
+    switch(matrix) {
+        case state.rCube.matrices.bottom:
+            rotationY = rotation;
+            break;
+        case state.rCube.matrices.middle:
+            rotationY = rotation;
+            break;
+        case state.rCube.matrices.top:
+            rotationY = rotation;
+            break;
+        case state.rCube.matrices.rright:
+            rotationX = rotation;
+            break;
+        case state.rCube.matrices.rcenter:
+            rotationX = rotation;
+            break;
+        case state.rCube.matrices.rleft:
+            rotationX = rotation;
+            break;
+        case state.rCube.matrices.lleft:
+            rotationZ = -rotation;
+            break;
+        case state.rCube.matrices.lcenter:
+            rotationZ = -rotation;
+            break;
+        case state.rCube.matrices.lright:
+            rotationZ = -rotation;
+            break;
     }
 
     for(let cube in matrix.arr) {    
@@ -235,7 +254,7 @@ function rotateMatrix(matrix, steps, direction) {
         for(let position in state.rCube.cubes) {
             if(position==newArray[cube]) {
                 newCubes[position] = state.rCube.cubes[newCube];
-                
+
                 if(direction==LEFT) {
                     newRotation[position] = {
                         x: state.rCube.rotations[position].x - rotationX,
