@@ -45,7 +45,6 @@ function Cube(gl) {
     cubePositionBuffer.numItems = 24;
 
     const cubeColorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorBuffer);
     const faceColors = [
         [1.0, 1.0, 1.0, 1.0], // font: white
         [0.0, 0.0, 1.0, 1.0], // back: blue
@@ -54,12 +53,7 @@ function Cube(gl) {
         [1.0, 0.0, 0.0, 1.0], // right: red
         [1.0, 0.5, 0.0, 1.0], // left: orange
     ];
-    let colors = [];
-    for(let i=0; i<faceColors.length; ++i) {
-        const c = faceColors[i];
-        colors = colors.concat(c,c,c,c);
-    }
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+    modifyColors(gl, faceColors, cubeColorBuffer);
     cubeColorBuffer.itemSize = 4;
     cubeColorBuffer.numItems = 6;
 
@@ -158,11 +152,22 @@ function Cube(gl) {
     cubeNormalBuffer.numItems = 24;
 
     return {
-        modelMatix: matrix,
+        modelMatrix: matrix,
         positionBuffer: cubePositionBuffer,
         colorBuffer: cubeColorBuffer,
         textureBuffer: cubeTextureBuffer,
         vertexIndices: cubeVertexBuffer,
-        normalBuffer: cubeNormalBuffer
+        normalBuffer: cubeNormalBuffer,
+        faceColors: faceColors
     };
+}
+
+function modifyColors(gl, faceColors, cubeColorBuffer) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorBuffer);
+    let colors = [];
+    for(let i=0; i<faceColors.length; ++i) {
+        const c = faceColors[i];
+        colors = colors.concat(c,c,c,c);
+    }
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
 }

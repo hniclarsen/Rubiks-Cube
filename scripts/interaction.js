@@ -10,8 +10,8 @@ function mouseDown(e) {
     origX = prevX = e.pageX;
     origY = prevY = e.pageY;
     if(e.which == 1) {
-        drag = true;
         rotate = true;
+        drag = true;
     }
     if(e.which == 3) {
         drag = true;
@@ -37,6 +37,14 @@ function mouseMove(e) {
         prevX = e.pageX;
         prevY = e.pageY;
     }
+
+    if(rotate) {
+        mRotY += e.pageX-prevX;
+        mRotX += e.pageY-prevY;
+        prevX = e.pageX;
+        prevY = e.pageY;
+    }
+
     e.preventDefault();
 }
 

@@ -1,0 +1,22 @@
+#buttons {
+    margin: 0 auto;
+    width: fit-content;
+    margin-top: 5px;
+}
+
+.group {
+    display: inline-block;
+    margin: 0 25px;
+}
+
+button {
+    border: 2px outset aqua;
+    border-radius: 5px;
+    background: linear-gradient(aqua, white);
+    font-weight: bold;
+}
+
+button:hover {
+    border: 2px inset aqua;
+    background: linear-gradient(aqua, rgb(179, 255, 255));
+}

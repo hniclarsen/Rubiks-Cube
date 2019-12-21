@@ -88,11 +88,60 @@
         <script type="text/javascript" src="scripts/cube.js"></script>
         <script type="text/javascript" src="scripts/main.js"></script>
         <script type="text/javascript" src="scripts/interaction.js"></script>
+        <link rel="stylesheet" type="text/css" href="rcube.css">
     </head>
     <body>
         <canvas id="canvas" style="display:block;margin:auto;" width=640 height=480 oncontextmenu="return false;">
             If you are seeing this, your web browser does not support the canvas element.
             Please use a browser from this decade.
         </canvas>
+        <div id="buttons">
+            <div class="group">
+                <button onclick="rotateMatrix(state.rCube.matrices.lleft, 1, 'left')">
+                    LLeft L</button>
+                <button onclick="rotateMatrix(state.rCube.matrices.lleft, 1, 'right')">
+                    LLeft R</button>
+            </div><div class="group">
+                <button onclick="rotateMatrix(state.rCube.matrices.lcenter, 1, 'left')">
+                    LCenter L</button>
+                <button onclick="rotateMatrix(state.rCube.matrices.lcenter, 1, 'right')">
+                    LCenter R</button>
+            </div><div class="group">
+                <button onclick="rotateMatrix(state.rCube.matrices.lright, 1, 'left')">
+                    LRight L</button>
+                <button onclick="rotateMatrix(state.rCube.matrices.lright, 1, 'right')">
+                    LRight R</button>
+            </div><div class="group">
+                <button onclick="rotateMatrix(state.rCube.matrices.top, 1, 'left')">
+                    Top L</button>
+                <button onclick="rotateMatrix(state.rCube.matrices.top, 1, 'right')">
+                    Top R</button>
+            </div><div class="group">
+                <button onclick="rotateMatrix(state.rCube.matrices.middle, 1, 'left')">
+                    Middle L</button>
+                <button onclick="rotateMatrix(state.rCube.matrices.middle, 1, 'right')">
+                    Middle R</button>
+            </div><div class="group">
+                <button onclick="rotateMatrix(state.rCube.matrices.bottom, 1, 'left')">
+                    Bottom L</button>
+                <button onclick="rotateMatrix(state.rCube.matrices.bottom, 1, 'right')">
+                    Bottom R</button>
+            </div><div class="group">
+                <button onclick="rotateMatrix(state.rCube.matrices.rleft, 1, 'left')">
+                    RLeft L</button>
+                <button onclick="rotateMatrix(state.rCube.matrices.rleft, 1, 'right')">
+                    RLeft R</button>
+            </div><div class="group">
+                <button onclick="rotateMatrix(state.rCube.matrices.rcenter, 1, 'left')">
+                    RCenter L</button>
+                <button onclick="rotateMatrix(state.rCube.matrices.rcenter, 1, 'right')">
+                    RCenter R</button>
+            </div><div class="group">
+                <button onclick="rotateMatrix(state.rCube.matrices.rright, 1, 'left')">
+                    RRight L</button>
+                <button onclick="rotateMatrix(state.rCube.matrices.rright, 1, 'right')">
+                    RRight R</button>
+            </div>
+        </div>
     </body>
 </html>
